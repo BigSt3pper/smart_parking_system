@@ -23,7 +23,9 @@ class ParkingSlotController extends Controller
     {
         $request->validate([
             'slot_number' => 'required|unique:parking_slots,slot_number',
-            'status' => 'required|in:available,occupied,reserved',
+            'status' => 'required|in:Available,Occupied,Maintenance',
+            'location' => 'required',
+            'price_per_hour' => 'required|numeric|min:0',
         ]);
 
         ParkingSlot::create($request->all());
@@ -41,7 +43,9 @@ class ParkingSlotController extends Controller
     {
         $request->validate([
             'slot_number' => 'required|unique:parking_slots,slot_number,' . $parkingSlot->id,
-            'status' => 'required|in:available,occupied,reserved',
+            'status' => 'required|in:Available,Occupied,Maintenance',
+            'location' => 'required',
+            'price_per_hour' => 'required|numeric|min:0',
         ]);
 
         $parkingSlot->update($request->all());
