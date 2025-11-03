@@ -11,7 +11,7 @@ class ParkingSlotController extends Controller
     public function index()
     {
         $parkingSlots = ParkingSlot::all();
-        return view('admin.parking_slots.index', compact('parkingSlots'));
+        return view('admin.parking-slots.index', compact('parkingSlots'));
     }
 
     public function create()

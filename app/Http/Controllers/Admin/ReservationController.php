@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/Admin/ReservationController.php
 
 namespace App\Http\Controllers\Admin;
 
@@ -6,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\ParkingSlot;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -18,48 +20,95 @@ class ReservationController extends Controller
 
     public function create()
     {
-        $usersm= User::all();
+        $users = User::all();
         $slots = ParkingSlot::where('status', 'Available')->get();
-        return view('admin.reservations.create', compact('users', 'slots'));
+        $vehicles = Vehicle::all();
+        
+        return view('admin.reservations.create', compact('users', 'slots', 'vehicles'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'slot_id' => 'required|exists:parking_slots,slotID',
+            'vehicle_id' => 'required|exists:vehicles,vehicleID',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+        ]);
+
+        // Calculate total hours and cost
+        $start = \Carbon\Carbon::parse($request->start_time);
+        $end = \Carbon\Carbon::parse($request->end_time);
+        $totalHours = $end->diffInHours($start);
+        
+        $slot = ParkingSlot::find($request->slot_id);
+        $totalCost = $totalHours * $slot->pricePerHour;
+
+        Reservation::create([
+            'userID' => $request->user_id,
+            'slotID' => $request->slot_id,
+            'vehicleID' => $request->vehicle_id,
+            'startTime' => $request->start_time,
+            'endTime' => $request->end_time,
+            'totalHours' => $totalHours,
+            'totalCost' => $totalCost,
+            'reservationStatus' => 'Active',
+            'paymentStatus' => 'Pending'
+        ]);
+
+        // Update slot status
+        $slot->update(['status' => 'Occupied']);
+
+        return redirect()->route('admin.reservations.index')
+                        ->with('success', 'Reservation created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show(Reservation $reservation)
     {
-        //
+        $reservation->load(['user', 'parkingSlot', 'vehicle']);
+        return view('admin.reservations.show', compact('reservation'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit(Reservation $reservation)
     {
-        //
+        $users = User::all();
+        $slots = ParkingSlot::all();
+        $vehicles = Vehicle::all();
+        
+        return view('admin.reservations.edit', compact('reservation', 'users', 'slots', 'vehicles'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Reservation $reservation)
     {
-        //
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'slot_id' => 'required|exists:parking_slots,slotID',
+            'vehicle_id' => 'required|exists:vehicles,vehicleID',
+            'start_time' => 'required|date',
+            'end_time' => 'required|date|after:start_time',
+            'reservation_status' => 'required|in:Active,Cancelled,Completed',
+            'payment_status' => 'required|in:Pending,Paid,Failed'
+        ]);
+
+        $reservation->update([
+            'userID' => $request->user_id,
+            'slotID' => $request->slot_id,
+            'vehicleID' => $request->vehicle_id,
+            'startTime' => $request->start_time,
+            'endTime' => $request->end_time,
+            'reservationStatus' => $request->reservation_status,
+            'paymentStatus' => $request->payment_status
+        ]);
+
+        return redirect()->route('admin.reservations.index')
+                        ->with('success', 'Reservation updated successfully.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Reservation $reservation)
     {
-        //
+        $reservation->delete();
+        return redirect()->route('admin.reservations.index')
+                        ->with('success', 'Reservation deleted successfully.');
     }
 }
