@@ -1,6 +1,4 @@
 <?php
-
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,18 +8,29 @@ class ParkingSlot extends Model
 {
     use HasFactory;
 
+    protected $table = 'ParkingSlot';
     protected $primaryKey = 'slotID';
     
     protected $fillable = [
         'slotNumber',
-        'location', 
+        'location',
         'status',
-        'pricePerHour',
-        'lastUpdated'
+        'pricePerHour'
     ];
 
     protected $casts = [
         'pricePerHour' => 'decimal:2',
         'lastUpdated' => 'datetime'
     ];
+
+    // Relationships
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'slotID', 'slotID');
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(ServiceRating::class, 'slotID', 'slotID');
+    }
 }

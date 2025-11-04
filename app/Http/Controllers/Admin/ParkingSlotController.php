@@ -8,9 +8,29 @@ use Illuminate\Http\Request;
 
 class ParkingSlotController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $parkingSlots = ParkingSlot::all();
+        $query = ParkingSlot::query();
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('slotNumber', 'LIKE', "%{$search}%")
+                  ->orWhere('location', 'LIKE', "%{$search}%");
+            });
+        }
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        // Filter by price range
+        if ($request->has('min_price') && $request->min_price != '') {
+            $query->where('pricePerHour', '>=', $request->min_price);
+        }
+        if ($request->has('max_price') && $request->max_price != '') {
+            $query->where('pricePerHour', '<=', $request->max_price);
+        }
+        $parkingSlots = $query->latest()->get();
         return view('admin.parking-slots.index', compact('parkingSlots'));
     }
 

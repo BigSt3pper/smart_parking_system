@@ -10,26 +10,37 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
-            // USE Reservation model instead of Payment model
-            $totalRevenue = Reservation::where('paymentStatus', 'Paid')->sum('totalCost') ?? 0;
-            
-            $activeReservations = Reservation::where('reservationStatus', 'Active')->count();
-            
+            $query = Reservation::query();
+            // Date range filter
+            if ($request->has('start_date') && $request->start_date != '') {
+                $query->whereDate('createdAt', '>=', $request->start_date);
+            }
+            if ($request->has('end_date') && $request->end_date != '') {
+                $query->whereDate('createdAt', '<=', $request->end_date);
+            }
+            // Filter by reservation status
+            if ($request->has('reservation_status') && $request->reservation_status != '') {
+                $query->where('reservationStatus', $request->reservation_status);
+            }
+            // Filter by payment status
+            if ($request->has('payment_status') && $request->payment_status != '') {
+                $query->where('paymentStatus', $request->payment_status);
+            }
+            // Calculate metrics based on filtered data
+            $totalRevenue = (clone $query)->where('paymentStatus', 'Paid')->sum('totalCost') ?? 0;
+            $activeReservations = (clone $query)->where('reservationStatus', 'Active')->count();
+            // Get recent reservations from filtered query
+            $recentReservations = $query->with(['user', 'parkingSlot'])
+                                        ->latest()
+                                        ->take(10)
+                                        ->get();
+            // Parking slots data (unfiltered)
             $totalSlots = ParkingSlot::count();
-            
-            // Occupancy Rate
             $occupiedSlots = ParkingSlot::where('status', 'Occupied')->count();
             $occupancyRate = $totalSlots > 0 ? ($occupiedSlots / $totalSlots) * 100 : 0;
-            
-            // Recent Reservations
-            $recentReservations = Reservation::with(['user', 'parkingSlot'])
-                                            ->latest()
-                                            ->take(10)
-                                            ->get();
-
             return view('admin.reports.index', compact(
                 'totalRevenue',
                 'activeReservations', 
@@ -37,15 +48,13 @@ class ReportController extends Controller
                 'occupancyRate',
                 'recentReservations'
             ));
-            
         } catch (\Exception $e) {
-            // Fallback if there are errors
             return view('admin.reports.index', [
                 'totalRevenue' => 0,
                 'activeReservations' => 0,
                 'totalSlots' => 0,
                 'occupancyRate' => 0,
-                'recentReservations' => collect() // Empty collection
+                'recentReservations' => collect()
             ]);
         }
     }

@@ -1,96 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservations - Admin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container-fluid mt-4">
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>Reservations Management</h2>
+@extends('admin.layouts.app')
+
+@section('title', 'Reservations Management')
+
+@section('content')
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4 mb-0">
+        <i class="bi bi-calendar-check me-2"></i> Reservations Management
+    </h2>
+    <a href="{{ route('admin.reservations.create') }}" class="btn btn-primary-custom">
+        <i class="bi bi-plus-circle me-1"></i> Create Reservation
+    </a>
+</div>
+
+<!-- Search and Filters -->
+<div class="card card-custom mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">Search</label>
+                <input type="text" name="search" class="form-control" 
+                       value="{{ request('search') }}" placeholder="Search by ID, User, or Slot...">
             </div>
-            <div class="col-md-6 text-end">
-                <a href="{{ route('admin.reservations.create') }}" class="btn btn-primary">
-                    + Create Reservation
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Status</label>
+                <select name="status" class="form-control">
+                    <option value="">All Statuses</option>
+                    <option value="Active" {{ request('status') == 'Active' ? 'selected' : '' }}>Active</option>
+                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Cancelled" {{ request('status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small text-muted">Payment Status</label>
+                <select name="payment_status" class="form-control">
+                    <option value="">All Payments</option>
+                    <option value="Pending" {{ request('payment_status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="Paid" {{ request('payment_status') == 'Paid' ? 'selected' : '' }}>Paid</option>
+                    <option value="Failed" {{ request('payment_status') == 'Failed' ? 'selected' : '' }}>Failed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small text-muted">&nbsp;</label><br>
+                <button type="submit" class="btn btn-primary-custom">
+                    <i class="bi bi-funnel me-1"></i> Filter
+                </button>
+                <a href="{{ route('admin.reservations.index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Reset
                 </a>
             </div>
-        </div>
+        </form>
+    </div>
+</div>
 
-        <div class="card">
-            <div class="card-body">
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
+<!-- Success Message -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Reservation ID</th>
-                                <th>User</th>
-                                <th>Slot</th>
-                                <th>Start Time</th>
-                                <th>End Time</th>
-                                <th>Total Cost</th>
-                                <th>Status</th>
-                                <th>Payment</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($reservations as $reservation)
-                            <tr>
-                                <td>#{{ $reservation->reservationID }}</td>
-                                <td>{{ $reservation->user->fullName ?? 'N/A' }}</td>
-                                <td>{{ $reservation->parkingSlot->slotNumber ?? 'N/A' }}</td>
-                                <td>{{ $reservation->startTime->format('M d, Y H:i') }}</td>
-                                <td>{{ $reservation->endTime->format('M d, Y H:i') }}</td>
-                                <td>${{ number_format($reservation->totalCost, 2) }}</td>
-                                <td>
-                                    <span class="badge bg-{{ 
-                                        $reservation->reservationStatus == 'Active' ? 'success' : 
-                                        ($reservation->reservationStatus == 'Completed' ? 'info' : 'danger') 
-                                    }}">
-                                        {{ $reservation->reservationStatus }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-{{ 
-                                        $reservation->paymentStatus == 'Paid' ? 'success' : 
-                                        ($reservation->paymentStatus == 'Pending' ? 'warning' : 'danger') 
-                                    }}">
-                                        {{ $reservation->paymentStatus }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="{{ route('admin.reservations.show', $reservation->reservationID) }}" 
-                                       class="btn btn-sm btn-info">View</a>
-                                    <a href="{{ route('admin.reservations.edit', $reservation->reservationID) }}" 
-                                       class="btn btn-sm btn-warning">Edit</a>
-                                    <form action="{{ route('admin.reservations.destroy', $reservation->reservationID) }}" 
-                                          method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" 
-                                                onclick="return confirm('Delete this reservation?')">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="9" class="text-center text-muted">No reservations found.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<!-- Reservations Table -->
+<div class="card card-custom">
+    <div class="card-header bg-white">
+        <h5 class="card-title mb-0">
+            <i class="bi bi-list-ul me-2"></i> Reservations ({{ $reservations->count() }})
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-custom mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-hash me-1"></i> Reservation ID</th>
+                        <th><i class="bi bi-person me-1"></i> User</th>
+                        <th><i class="bi bi-p-square me-1"></i> Slot</th>
+                        <th><i class="bi bi-clock me-1"></i> Start Time</th>
+                        <th><i class="bi bi-clock-history me-1"></i> End Time</th>
+                        <th><i class="bi bi-currency-dollar me-1"></i> Total Cost</th>
+                        <th><i class="bi bi-circle-fill me-1"></i> Status</th>
+                        <th><i class="bi bi-credit-card me-1"></i> Payment</th>
+                        <th><i class="bi bi-gear me-1"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($reservations as $reservation)
+                    <tr>
+                        <td class="fw-bold text-primary">#{{ $reservation->reservationID }}</td>
+                        <td>{{ $reservation->user->fullName ?? 'N/A' }}</td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ $reservation->parkingSlot->slotNumber ?? 'N/A' }}</span>
+                        </td>
+                        <td>{{ $reservation->startTime->format('M d, Y H:i') }}</td>
+                        <td>{{ $reservation->endTime->format('M d, Y H:i') }}</td>
+                        <td class="fw-bold">${{ number_format($reservation->totalCost, 2) }}</td>
+                        <td>
+                            <span class="badge badge-custom bg-{{ 
+                                $reservation->reservationStatus == 'Active' ? 'success' : 
+                                ($reservation->reservationStatus == 'Completed' ? 'info' : 'danger') 
+                            }}">
+                                <i class="bi bi-{{ 
+                                    $reservation->reservationStatus == 'Active' ? 'play-circle' : 
+                                    ($reservation->reservationStatus == 'Completed' ? 'check-circle' : 'x-circle') 
+                                }} me-1"></i>
+                                {{ $reservation->reservationStatus }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-custom bg-{{ 
+                                $reservation->paymentStatus == 'Paid' ? 'success' : 
+                                ($reservation->paymentStatus == 'Pending' ? 'warning' : 'danger') 
+                            }}">
+                                <i class="bi bi-{{ 
+                                    $reservation->paymentStatus == 'Paid' ? 'check' : 
+                                    ($reservation->paymentStatus == 'Pending' ? 'clock' : 'exclamation-triangle') 
+                                }} me-1"></i>
+                                {{ $reservation->paymentStatus }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ route('admin.reservations.show', $reservation->reservationID) }}" 
+                                   class="btn btn-outline-info">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ route('admin.reservations.edit', $reservation->reservationID) }}" 
+                                   class="btn btn-outline-warning">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form action="{{ route('admin.reservations.destroy', $reservation->reservationID) }}" 
+                                      method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger" 
+                                            onclick="return confirm('Delete this reservation?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
+                            <span class="text-muted">No reservations found.</span>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
-</body>
-</html>
+</div>
+@endsection

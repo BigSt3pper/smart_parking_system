@@ -4,28 +4,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Vehicle extends Model
+class Feedback extends Model
 {
     use HasFactory;
 
-    protected $table = 'Vehicle';
-    protected $primaryKey = 'vehicleID';
+    protected $table = 'Feedback';
+    protected $primaryKey = 'feedbackID';
     
     protected $fillable = [
         'userID',
-        'NumberPlate',
-        'model',
-        'color'
+        'message'
+    ];
+
+    protected $casts = [
+        'dateSubmitted' => 'datetime'
     ];
 
     // Relationships
     public function user()
     {
         return $this->belongsTo(User::class, 'userID', 'userID');
-    }
-
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class, 'vehicleID', 'vehicleID');
     }
 }

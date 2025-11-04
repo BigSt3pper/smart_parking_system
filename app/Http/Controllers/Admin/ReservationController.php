@@ -12,9 +12,35 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reservations = Reservation::with(['user', 'parkingSlot'])->latest()->get();
+        $query = Reservation::with(['user', 'parkingSlot']);
+
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('reservationID', 'LIKE', "%{$search}%")
+                  ->orWhereHas('user', function($q) use($search) {
+                        $q->where('fullName', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('parkingSlot', function($q) use ($search) {
+                        $q->where('slotNumber', 'LIKE', "%{$search}%");
+                  });
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status != '') {
+            $query->where('reservationStatus', $request->status);
+        }
+
+        //Filter by poayment status
+        if ($request->has('paymentStatus') && $request->payment_status !='') {
+            $query->where('paymentStatus', $request->payment_status);
+        }
+
+        $reservations = $query->latest()->get();
+       
+        $reservations = $query->latest()->get();
         return view('admin.reservations.index', compact('reservations'));
     }
 

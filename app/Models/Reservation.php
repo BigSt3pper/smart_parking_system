@@ -1,6 +1,4 @@
 <?php
-// app/Models/Reservation.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,19 +8,19 @@ class Reservation extends Model
 {
     use HasFactory;
 
+    protected $table = 'Reservation';
     protected $primaryKey = 'reservationID';
     
     protected $fillable = [
         'userID',
-        'vehicleID',
+        'vehicleID', 
         'slotID',
         'startTime',
-        'endTime', 
+        'endTime',
         'totalHours',
         'totalCost',
         'paymentStatus',
-        'reservationStatus',
-        'createdAt'
+        'reservationStatus'
     ];
 
     protected $casts = [
@@ -32,25 +30,24 @@ class Reservation extends Model
         'totalCost' => 'decimal:2'
     ];
 
+    // Relationships
     public function user()
     {
-        return $this->belongsTo(User::class, 'userID');
+        return $this->belongsTo(User::class, 'userID', 'userID');
     }
 
     public function parkingSlot()
     {
-        return $this->belongsTo(ParkingSlot::class, 'slotID');
+        return $this->belongsTo(ParkingSlot::class, 'slotID', 'slotID');
     }
 
     public function vehicle()
     {
-        return $this->belongsTo(Vehicle::class, 'vehicleID');
+        return $this->belongsTo(Vehicle::class, 'vehicleID', 'vehicleID');
     }
 
-    public function index() 
-{
-    $reservations = Reservation::with(['user', 'parkingSlot'])->latest()->get();
-    return view('admin.reservations.index', compact('reservations'));
-    
-}
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'reservationID', 'reservationID');
+    }
 }

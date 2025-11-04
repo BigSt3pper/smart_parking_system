@@ -1,12 +1,33 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-
+// TEMPORARY TEST ROUTES - Add at the top
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ParkingSlotController;
+use App\Http\Controllers\Admin\ReservationController;
+use App\Http\Controllers\Admin\ReportController;
 
+// Test basic route
+Route::get('/test', function () {
+    return "✅ Test route working! Server is running on port 8000";
+});
+
+// Test database connection
+Route::get('/test-db', function () {
+    try {
+        $slots = \App\Models\ParkingSlot::count();
+        $users = \App\Models\User::count();
+        return "✅ Database working! Parking Slots: $slots, Users: $users";
+    } catch (\Exception $e) {
+        return "❌ Database error: " . $e->getMessage();
+    }
+});
+
+// Direct admin routes (bypass any prefix issues)
+Route::get('/admin/parking-slots-direct', [ParkingSlotController::class, 'index']);
+Route::get('/admin/reservations-direct', [ReservationController::class, 'index']);
+Route::get('/admin/reports-direct', [ReportController::class, 'index']);
+
+// ADMIN ROUTES
+Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
 Route::prefix('admin')->group(function () {
     
     // PARKING SLOTS ROUTES
@@ -30,4 +51,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'exports'])->name('admin.reports.exports');
     Route::get('/admin/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
+    
+    
 });
