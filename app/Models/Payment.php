@@ -10,7 +10,7 @@ class Payment extends Model
 
     protected $table = 'Payment';
     protected $primaryKey = 'paymentID';
-    
+    public $timestamps = false;
     protected $fillable = [
         'reservationID',
         'userID',

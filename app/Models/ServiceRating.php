@@ -10,7 +10,7 @@ class ServiceRating extends Model
 
     protected $table = 'ServiceRating';
     protected $primaryKey = 'ratingID';
-    
+    public $timestamps = false;
     protected $fillable = [
         'userID',
         'slotID',

@@ -144,10 +144,17 @@
                     </a>
                 </li>
                 <li class="nav-item mt-4">
-                    <a class="nav-link text-warning" href="#">
-                        <i class="bi bi-box-arrow-right me-2"></i> Logout
-                    </a>
-                </li>
+    <form action="{{ route('admin.logout') }}" method="POST" class="d-inline">
+        @csrf
+        <button type="submit" class="nav-link text-warning border-0 bg-transparent w-100 text-start">
+            <i class="bi bi-box-arrow-right me-2"></i> Logout
+        </button>
+    </form>
+</li>
+                
+                
+                
+                
             </ul>
         </nav>
     </div>

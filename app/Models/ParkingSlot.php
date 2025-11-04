@@ -10,7 +10,7 @@ class ParkingSlot extends Model
 
     protected $table = 'ParkingSlot';
     protected $primaryKey = 'slotID';
-    
+    public $timestamps = false; 
     protected $fillable = [
         'slotNumber',
         'location',

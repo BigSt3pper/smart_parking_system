@@ -10,7 +10,7 @@ class Feedback extends Model
 
     protected $table = 'Feedback';
     protected $primaryKey = 'feedbackID';
-    
+    public $timestamps = false;
     protected $fillable = [
         'userID',
         'message'

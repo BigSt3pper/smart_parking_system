@@ -10,7 +10,7 @@ class Vehicle extends Model
 
     protected $table = 'Vehicle';
     protected $primaryKey = 'vehicleID';
-    
+    public $timestamps = false;
     protected $fillable = [
         'userID',
         'NumberPlate',
