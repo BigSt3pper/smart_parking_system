@@ -8,84 +8,34 @@
         <i class="bi bi-graph-up me-2"></i> Reports & Analytics
     </h2>
     <div>
-        <a href="{{ route('admin.reports.export') }}" class="btn btn-success me-2">
-            <i class="bi bi-download me-1"></i> Export
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary me-2">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+        <a href="{{ route('admin.reports.export') }}" class="btn btn-success">
+            <i class="bi bi-download me-1"></i> Export Report
         </a>
     </div>
 </div>
 
-<!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card card-custom stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title text-muted">Total Revenue</h6>
-                        <h3 class="mb-0">${{ number_format($totalRevenue, 2) }}</h3>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-currency-dollar display-6 text-primary"></i>
-                    </div>
-                </div>
-                <small class="text-muted">All time</small>
-            </div>
-        </div>
+<!-- Success/Info Messages -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <div class="col-md-3">
-        <div class="card card-custom stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title text-muted">Active Reservations</h6>
-                        <h3 class="mb-0">{{ $activeReservations }}</h3>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-calendar-check display-6 text-success"></i>
-                    </div>
-                </div>
-                <small class="text-muted">Currently active</small>
-            </div>
-        </div>
+@endif
+
+@if(session('info'))
+    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+        <i class="bi bi-info-circle me-2"></i> {{ session('info') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <div class="col-md-3">
-        <div class="card card-custom stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title text-muted">Total Slots</h6>
-                        <h3 class="mb-0">{{ $totalSlots }}</h3>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-p-square display-6 text-info"></i>
-                    </div>
-                </div>
-                <small class="text-muted">Parking capacity</small>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card card-custom stat-card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="card-title text-muted">Occupancy Rate</h6>
-                        <h3 class="mb-0">{{ number_format($occupancyRate, 1) }}%</h3>
-                    </div>
-                    <div class="align-self-center">
-                        <i class="bi bi-speedometer2 display-6 text-warning"></i>
-                    </div>
-                </div>
-                <small class="text-muted">Current utilization</small>
-            </div>
-        </div>
-    </div>
-</div>
+@endif
 
 <!-- Enhanced Date Range Filters -->
 <div class="card card-custom mb-4">
     <div class="card-body">
-        <h5 class="card-title">
+        <h5 class="card-title mb-3">
             <i class="bi bi-funnel me-2"></i> Filter Reports
         </h5>
         <form method="GET" class="row g-3">
@@ -130,12 +80,145 @@
         <div class="row mt-3">
             <div class="col-md-12">
                 <small class="text-muted">Quick filters:</small>
-                <a href="{{ route('admin.reports.index', ['start_date' => now()->subDays(7)->format('Y-m-d')]) }}" 
+                <a href="{{ route('admin.reports.index', ['start_date' => now()->subDays(7)->format('Y-m-d'), 'end_date' => now()->format('Y-m-d')]) }}" 
                    class="btn btn-sm btn-outline-primary me-1">Last 7 Days</a>
-                <a href="{{ route('admin.reports.index', ['start_date' => now()->subDays(30)->format('Y-m-d')]) }}" 
+                <a href="{{ route('admin.reports.index', ['start_date' => now()->subDays(30)->format('Y-m-d'), 'end_date' => now()->format('Y-m-d')]) }}" 
                    class="btn btn-sm btn-outline-primary me-1">Last 30 Days</a>
-                <a href="{{ route('admin.reports.index', ['start_date' => now()->startOfMonth()->format('Y-m-d')]) }}" 
+                <a href="{{ route('admin.reports.index', ['start_date' => now()->startOfMonth()->format('Y-m-d'), 'end_date' => now()->endOfMonth()->format('Y-m-d')]) }}" 
                    class="btn btn-sm btn-outline-primary">This Month</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card card-custom stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-muted">Total Revenue</h6>
+                        <h3 class="mb-0">${{ number_format($totalRevenue, 2) }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-currency-dollar display-6 text-success"></i>
+                    </div>
+                </div>
+                <small class="text-muted">From paid reservations</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-custom stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-muted">Active Reservations</h6>
+                        <h3 class="mb-0">{{ $activeReservations }}</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-play-circle display-6 text-primary"></i>
+                    </div>
+                </div>
+                <small class="text-muted">Currently ongoing</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-custom stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-muted">Slot Occupancy</h6>
+                        <h3 class="mb-0">{{ number_format($occupancyRate, 1) }}%</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-speedometer2 display-6 text-info"></i>
+                    </div>
+                </div>
+                <small class="text-muted">{{ $occupiedSlots }}/{{ $totalSlots }} occupied</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-custom stat-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title text-muted">Avg. Duration</h6>
+                        <h3 class="mb-0">{{ number_format($avgReservationDuration, 1) }}h</h3>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock display-6 text-warning"></i>
+                    </div>
+                </div>
+                <small class="text-muted">Per reservation</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Breakdown Cards -->
+<div class="row mb-4">
+    <!-- Reservation Status Breakdown -->
+    <div class="col-md-6">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-calendar-check me-2"></i> Reservation Status Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <h4 class="text-success mb-1">{{ $activeReservations }}</h4>
+                            <small class="text-muted">Active</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <h4 class="text-info mb-1">{{ $completedReservations }}</h4>
+                            <small class="text-muted">Completed</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-danger mb-1">{{ $cancelledReservations }}</h4>
+                        <small class="text-muted">Cancelled</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment Status Breakdown -->
+    <div class="col-md-6">
+        <div class="card card-custom h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-credit-card me-2"></i> Payment Status Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="border-end">
+                            <h4 class="text-success mb-1">{{ $paidReservations }}</h4>
+                            <small class="text-muted">Paid</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="border-end">
+                            <h4 class="text-warning mb-1">{{ $pendingPayments }}</h4>
+                            <small class="text-muted">Pending</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-danger mb-1">{{ $failedPayments }}</h4>
+                        <small class="text-muted">Failed</small>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -159,6 +242,7 @@
                         <th><i class="bi bi-clock me-1"></i> Duration</th>
                         <th><i class="bi bi-currency-dollar me-1"></i> Amount</th>
                         <th><i class="bi bi-circle-fill me-1"></i> Status</th>
+                        <th><i class="bi bi-credit-card me-1"></i> Payment</th>
                         <th><i class="bi bi-calendar me-1"></i> Date</th>
                     </tr>
                 </thead>
@@ -173,18 +257,39 @@
                         <td>{{ $reservation->totalHours }} hours</td>
                         <td class="fw-bold">${{ number_format($reservation->totalCost, 2) }}</td>
                         <td>
-                            <span class="badge badge-custom bg-{{ $reservation->reservationStatus == 'Active' ? 'success' : 'info' }}">
-                                <i class="bi bi-{{ $reservation->reservationStatus == 'Active' ? 'play-circle' : 'check-circle' }} me-1"></i>
+                            <span class="badge badge-custom bg-{{ 
+                                $reservation->reservationStatus == 'Active' ? 'success' : 
+                                ($reservation->reservationStatus == 'Completed' ? 'info' : 'danger') 
+                            }}">
+                                <i class="bi bi-{{ 
+                                    $reservation->reservationStatus == 'Active' ? 'play-circle' : 
+                                    ($reservation->reservationStatus == 'Completed' ? 'check-circle' : 'x-circle') 
+                                }} me-1"></i>
                                 {{ $reservation->reservationStatus }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-custom bg-{{ 
+                                $reservation->paymentStatus == 'Paid' ? 'success' : 
+                                ($reservation->paymentStatus == 'Pending' ? 'warning' : 'danger') 
+                            }}">
+                                {{ $reservation->paymentStatus }}
                             </span>
                         </td>
                         <td>{{ $reservation->createdAt->format('M d, Y') }}</td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-4">
+                        <td colspan="8" class="text-center py-4">
                             <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
                             <span class="text-muted">No reservations found.</span>
+                            @if(request()->anyFilled(['start_date', 'end_date', 'reservation_status', 'payment_status']))
+                                <div class="mt-2">
+                                    <a href="{{ route('admin.reports.index') }}" class="btn btn-sm btn-outline-primary">
+                                        Clear filters to see all reservations
+                                    </a>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     @endforelse
@@ -197,18 +302,72 @@
 <!-- Export Options -->
 <div class="card card-custom mt-4">
     <div class="card-body">
-        <h5 class="card-title">
-            <i class="bi bi-download me-2"></i> Export Reports
+        <h5 class="card-title mb-3">
+            <i class="bi bi-download me-2"></i> Export Options
         </h5>
-        <a href="#" class="btn btn-success me-2">
-            <i class="bi bi-file-earmark-excel me-1"></i> Export to Excel
-        </a>
-        <a href="#" class="btn btn-danger me-2">
-            <i class="bi bi-file-earmark-pdf me-1"></i> Export to PDF
-        </a>
-        <a href="#" class="btn btn-info">
-            <i class="bi bi-printer me-1"></i> Print Report
-        </a>
+        <div class="d-flex flex-wrap gap-2">
+            <form action="{{ route('admin.reports.export') }}" method="GET" class="d-inline">
+                <input type="hidden" name="format" value="excel">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-file-earmark-excel me-1"></i> Export to Excel
+                </button>
+            </form>
+            <form action="{{ route('admin.reports.export') }}" method="GET" class="d-inline">
+                <input type="hidden" name="format" value="pdf">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Export to PDF
+                </button>
+            </form>
+            <button onclick="window.print()" class="btn btn-info">
+                <i class="bi bi-printer me-1"></i> Print Report
+            </button>
+        </div>
+        <small class="text-muted mt-2 d-block">Note: Export features include current filter settings</small>
     </div>
 </div>
+
+<!-- Summary Section -->
+@if(request()->anyFilled(['start_date', 'end_date', 'reservation_status', 'payment_status']))
+<div class="card card-custom mt-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <i class="bi bi-info-circle me-2"></i> Report Summary
+        </h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Date Range:</strong> 
+                    @if(request('start_date') && request('end_date'))
+                        {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }} - {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                    @elseif(request('start_date'))
+                        From {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }}
+                    @elseif(request('end_date'))
+                        Until {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                    @else
+                        All dates
+                    @endif
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Filters Applied:</strong> 
+                    {{ request('reservation_status') ? 'Status: ' . request('reservation_status') . ', ' : '' }}
+                    {{ request('payment_status') ? 'Payment: ' . request('payment_status') : '' }}
+                    {{ !request('reservation_status') && !request('payment_status') ? 'No additional filters' : '' }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
+<style>
+@media print {
+    .btn, .card-header, .alert, .form-control, .form-label {
+        display: none !important;
+    }
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+    }
+}
+</style>
 @endsection

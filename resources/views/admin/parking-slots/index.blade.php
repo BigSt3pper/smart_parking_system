@@ -105,7 +105,7 @@
                         <td>
                             <div class="btn-group btn-group-sm">
                                 <a href="{{ route('admin.parking-slots.edit', $slot->slotID) }}" 
-                                   class="btn btn-outline-warning">
+                                   class="btn btn-outline-warning" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
                                 <form action="{{ route('admin.parking-slots.destroy', $slot->slotID) }}" 
@@ -113,7 +113,8 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-outline-danger" 
-                                            onclick="return confirm('Are you sure you want to delete this slot?')">
+                                            onclick="return confirm('Are you sure you want to delete slot {{ $slot->slotNumber }}?')"
+                                            title="Delete">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -125,6 +126,19 @@
                         <td colspan="6" class="text-center py-4">
                             <i class="bi bi-inbox display-4 text-muted d-block mb-2"></i>
                             <span class="text-muted">No parking slots found.</span>
+                            @if(request()->anyFilled(['search', 'status', 'min_price', 'max_price']))
+                                <div class="mt-2">
+                                    <a href="{{ route('admin.parking-slots.index') }}" class="btn btn-sm btn-outline-primary">
+                                        Clear filters
+                                    </a>
+                                </div>
+                            @else
+                                <div class="mt-2">
+                                    <a href="{{ route('admin.parking-slots.create') }}" class="btn btn-sm btn-primary">
+                                        Add First Slot
+                                    </a>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                     @endforelse
@@ -132,5 +146,14 @@
             </table>
         </div>
     </div>
+    
+    <!-- Results Count (without pagination) -->
+    @if($parkingSlots->count() > 0)
+    <div class="card-footer bg-white">
+        <div class="small text-muted">
+            Showing all {{ $parkingSlots->count() }} parking slots
+        </div>
+    </div>
+    @endif
 </div>
 @endsection

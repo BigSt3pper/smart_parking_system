@@ -14,17 +14,20 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Reservation::with(['user', 'parkingSlot']);
+        $query = Reservation::with(['user', 'parkingSlot', 'vehicle']);
 
         // Search functionality
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where('reservationID', 'LIKE', "%{$search}%")
                   ->orWhereHas('user', function($q) use($search) {
-                        $q->where('fullName', 'LIKE', "%{$search}%");
+                      $q->where('fullName', 'LIKE', "%{$search}%");
                   })
                   ->orWhereHas('parkingSlot', function($q) use ($search) {
-                        $q->where('slotNumber', 'LIKE', "%{$search}%");
+                      $q->where('slotNumber', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('vehicle', function($q) use ($search) {
+                      $q->where('plateNumber', 'LIKE', "%{$search}%");
                   });
         }
 
@@ -33,13 +36,11 @@ class ReservationController extends Controller
             $query->where('reservationStatus', $request->status);
         }
 
-        //Filter by poayment status
-        if ($request->has('paymentStatus') && $request->payment_status !='') {
+        // Filter by payment status
+        if ($request->has('payment_status') && $request->payment_status != '') {
             $query->where('paymentStatus', $request->payment_status);
         }
 
-        $reservations = $query->latest()->get();
-       
         $reservations = $query->latest()->get();
         return view('admin.reservations.index', compact('reservations'));
     }
@@ -49,7 +50,7 @@ class ReservationController extends Controller
         $users = User::all();
         $slots = ParkingSlot::where('status', 'Available')->get();
         $vehicles = Vehicle::all();
-        
+
         return view('admin.reservations.create', compact('users', 'slots', 'vehicles'));
     }
 
@@ -67,7 +68,7 @@ class ReservationController extends Controller
         $start = \Carbon\Carbon::parse($request->start_time);
         $end = \Carbon\Carbon::parse($request->end_time);
         $totalHours = $end->diffInHours($start);
-        
+
         $slot = ParkingSlot::find($request->slot_id);
         $totalCost = $totalHours * $slot->pricePerHour;
 
@@ -101,7 +102,7 @@ class ReservationController extends Controller
         $users = User::all();
         $slots = ParkingSlot::all();
         $vehicles = Vehicle::all();
-        
+
         return view('admin.reservations.edit', compact('reservation', 'users', 'slots', 'vehicles'));
     }
 
@@ -117,15 +118,33 @@ class ReservationController extends Controller
             'payment_status' => 'required|in:Pending,Paid,Failed'
         ]);
 
+        // Calculate total hours and cost if times changed
+        $start = \Carbon\Carbon::parse($request->start_time);
+        $end = \Carbon\Carbon::parse($request->end_time);
+        $totalHours = $end->diffInHours($start);
+
+        $slot = ParkingSlot::find($request->slot_id);
+        $totalCost = $totalHours * $slot->pricePerHour;
+
+        // Update the reservation
         $reservation->update([
             'userID' => $request->user_id,
             'slotID' => $request->slot_id,
             'vehicleID' => $request->vehicle_id,
             'startTime' => $request->start_time,
             'endTime' => $request->end_time,
+            'totalHours' => $totalHours,
+            'totalCost' => $totalCost,
             'reservationStatus' => $request->reservation_status,
             'paymentStatus' => $request->payment_status
         ]);
+
+        // Update slot status based on reservation status
+        if ($request->reservation_status == 'Active') {
+            $slot->update(['status' => 'Occupied']);
+        } elseif ($request->reservation_status == 'Cancelled' || $request->reservation_status == 'Completed') {
+            $slot->update(['status' => 'Available']);
+        }
 
         return redirect()->route('admin.reservations.index')
                         ->with('success', 'Reservation updated successfully.');
@@ -133,7 +152,14 @@ class ReservationController extends Controller
 
     public function destroy(Reservation $reservation)
     {
+        // Free up the parking slot before deleting reservation
+        $slot = ParkingSlot::find($reservation->slotID);
+        if ($slot) {
+            $slot->update(['status' => 'Available']);
+        }
+
         $reservation->delete();
+        
         return redirect()->route('admin.reservations.index')
                         ->with('success', 'Reservation deleted successfully.');
     }
