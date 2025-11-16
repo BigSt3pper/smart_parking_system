@@ -15,7 +15,9 @@ class ParkingSlot extends Model
         'slotNumber',
         'location',
         'status',
-        'pricePerHour'
+        'pricePerHour',
+        'description',
+        'lastUpdated'
     ];
 
     protected $casts = [
@@ -32,5 +34,23 @@ class ParkingSlot extends Model
     public function ratings()
     {
         return $this->hasMany(ServiceRating::class, 'slotID', 'slotID');
+    }
+
+    // Scope for available slots
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', 'Available');
+    }
+
+    // Scope for occupied slots
+    public function scopeOccupied($query)
+    {
+        return $query->where('status', 'Occupied');
+    }
+
+    // Scope for maintenance slots
+    public function scopeMaintenance($query)
+    {
+        return $query->where('status', 'Maintenance');
     }
 }

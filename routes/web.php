@@ -53,15 +53,15 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     // Logout
     Route::post('/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('admin.logout');
     
-    // Parking Slot Management - FULL CRUD ROUTES
+    // Parking Slot Management (Collo's part)
     Route::get('/parking-slots', [App\Http\Controllers\Admin\ParkingSlotController::class, 'index'])->name('admin.parking-slots.index');
     Route::get('/parking-slots/create', [App\Http\Controllers\Admin\ParkingSlotController::class, 'create'])->name('admin.parking-slots.create');
     Route::post('/parking-slots', [App\Http\Controllers\Admin\ParkingSlotController::class, 'store'])->name('admin.parking-slots.store');
-    Route::get('/parking-slots/{parkingSlot}/edit', [App\Http\Controllers\Admin\ParkingSlotController::class, 'edit'])->name('admin.parking-slots.edit');
-    Route::put('/parking-slots/{parkingSlot}', [App\Http\Controllers\Admin\ParkingSlotController::class, 'update'])->name('admin.parking-slots.update');
-    Route::delete('/parking-slots/{parkingSlot}', [App\Http\Controllers\Admin\ParkingSlotController::class, 'destroy'])->name('admin.parking-slots.destroy');
+    Route::get('/parking-slots/{id}/edit', [App\Http\Controllers\Admin\ParkingSlotController::class, 'edit'])->name('admin.parking-slots.edit');
+    Route::put('/parking-slots/{id}', [App\Http\Controllers\Admin\ParkingSlotController::class, 'update'])->name('admin.parking-slots.update');
+    Route::delete('/parking-slots/{id}', [App\Http\Controllers\Admin\ParkingSlotController::class, 'destroy'])->name('admin.parking-slots.destroy');
     
-    // Reservation Management - FULL CRUD ROUTES
+    // Reservation Management (Collo's part)
     Route::get('/reservations', [App\Http\Controllers\Admin\ReservationController::class, 'index'])->name('admin.reservations.index');
     Route::get('/reservations/create', [App\Http\Controllers\Admin\ReservationController::class, 'create'])->name('admin.reservations.create');
     Route::post('/reservations', [App\Http\Controllers\Admin\ReservationController::class, 'store'])->name('admin.reservations.store');
@@ -70,7 +70,7 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::put('/reservations/{reservation}', [App\Http\Controllers\Admin\ReservationController::class, 'update'])->name('admin.reservations.update');
     Route::delete('/reservations/{reservation}', [App\Http\Controllers\Admin\ReservationController::class, 'destroy'])->name('admin.reservations.destroy');
     
-    // Reports
+    // Reports (Collo's part)
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/export', [App\Http\Controllers\Admin\ReportController::class, 'export'])->name('admin.reports.export');
     

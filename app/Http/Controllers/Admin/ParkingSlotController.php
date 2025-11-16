@@ -12,6 +12,7 @@ class ParkingSlotController extends Controller
     public function index(Request $request)
     {
         $query = ParkingSlot::query();
+        
         // Search functionality
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -20,10 +21,12 @@ class ParkingSlotController extends Controller
                   ->orWhere('location', 'LIKE', "%{$search}%");
             });
         }
+        
         // Filter by status
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
+        
         // Filter by price range
         if ($request->has('min_price') && $request->min_price != '') {
             $query->where('pricePerHour', '>=', $request->min_price);
@@ -31,7 +34,8 @@ class ParkingSlotController extends Controller
         if ($request->has('max_price') && $request->max_price != '') {
             $query->where('pricePerHour', '<=', $request->max_price);
         }
-        $parkingSlots = $query->orderBy('lastUpdated', 'desc')->get();
+        
+        $parkingSlots = $query->orderBy('slotID')->get();
         return view('admin.parking-slots.index', compact('parkingSlots'));
     }
 
@@ -43,57 +47,60 @@ class ParkingSlotController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'slot_number' => 'required|unique:ParkingSlot,slotNumber',
+            'slotNumber' => 'required|unique:ParkingSlot,slotNumber',
+            'location' => 'required|string|max:255',
+            'pricePerHour' => 'required|numeric|min:0',
             'status' => 'required|in:Available,Occupied,Maintenance',
-            'location' => 'required',
-            'price_per_hour' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:500'
         ]);
 
         ParkingSlot::create([
-            'slotNumber' => $request->slot_number,
+            'slotNumber' => $request->slotNumber,
             'location' => $request->location,
+            'pricePerHour' => $request->pricePerHour,
             'status' => $request->status,
-            'pricePerHour' => $request->price_per_hour,
-            'lastUpdated' => now(),
+            'description' => $request->description
         ]);
 
         return redirect()->route('admin.parking-slots.index')
                          ->with('success', 'Parking slot created successfully.');
     }
 
-    public function edit(ParkingSlot $parkingSlot)
+    public function edit($id)
     {
+        $parkingSlot = ParkingSlot::findOrFail($id);
         return view('admin.parking-slots.edit', compact('parkingSlot'));
     }
 
-    public function update(Request $request, ParkingSlot $parkingSlot)
+    public function update(Request $request, $id)
     {
+        $parkingSlot = ParkingSlot::findOrFail($id);
+        
         $request->validate([
-            'slot_number' => [
-                'required',
-                Rule::unique('ParkingSlot', 'slotNumber')->ignore($parkingSlot->slotID, 'slotID')
-            ],
+            'slotNumber' => 'required|unique:ParkingSlot,slotNumber,' . $id . ',slotID',
+            'location' => 'required|string|max:255',
+            'pricePerHour' => 'required|numeric|min:0',
             'status' => 'required|in:Available,Occupied,Maintenance',
-            'location' => 'required',
-            'price_per_hour' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:500'
         ]);
 
         $parkingSlot->update([
-            'slotNumber' => $request->slot_number,
+            'slotNumber' => $request->slotNumber,
             'location' => $request->location,
+            'pricePerHour' => $request->pricePerHour,
             'status' => $request->status,
-            'pricePerHour' => $request->price_per_hour,
-            'lastUpdated' => now(),
+            'description' => $request->description
         ]);
 
         return redirect()->route('admin.parking-slots.index')
                          ->with('success', 'Parking slot updated successfully.');
     }
 
-    public function destroy(ParkingSlot $parkingSlot)
+    public function destroy($id)
     {
+        $parkingSlot = ParkingSlot::findOrFail($id);
         $parkingSlot->delete();
-
+        
         return redirect()->route('admin.parking-slots.index')
                          ->with('success', 'Parking slot deleted successfully.');
     }
