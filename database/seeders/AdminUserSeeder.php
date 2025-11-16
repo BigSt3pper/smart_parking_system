@@ -1,23 +1,22 @@
 <?php
+
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('User')->insert([
+        User::create([
             'fullName' => 'System Administrator',
-            'email' => 'admin@parksmart.com',
+            'email' => 'admin@smartparking.com',
             'password' => Hash::make('admin123'),
             'role' => 'Admin',
-            'phoneNumber' => '1234567890',
-            'dateRegistered' => now()
+            'phoneNumber' => '+1234567890',
         ]);
-
-        echo "✅ Admin user created: admin@parksmart.com / admin123\n";
     }
 }

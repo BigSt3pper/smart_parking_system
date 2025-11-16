@@ -9,44 +9,44 @@ return new class extends Migration
 {
     public function up()
     {
-        // Use Hamza's exact SQL schema
+  
         DB::statement("
             CREATE TABLE User (
-                userID INTEGER PRIMARY KEY AUTOINCREMENT,
+                userID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 fullName VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 phoneNumber VARCHAR(15),
                 role VARCHAR(20) DEFAULT 'Driver',
-                dateRegistered DATETIME DEFAULT CURRENT_TIMESTAMP
+                dateRegistered TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
         DB::statement("
             CREATE TABLE ParkingSlot (
-                slotID INTEGER PRIMARY KEY AUTOINCREMENT,
+                slotID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 slotNumber VARCHAR(10) UNIQUE NOT NULL,
                 location VARCHAR(100),
                 status VARCHAR(20) DEFAULT 'Available',
                 pricePerHour DECIMAL(8,2) DEFAULT 50.00,
-                lastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP
+                lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ");
 
         DB::statement("
             CREATE TABLE Vehicle (
-                vehicleID INTEGER PRIMARY KEY AUTOINCREMENT,
+                vehicleID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 userID INTEGER,
                 NumberPlate VARCHAR(20) UNIQUE NOT NULL,
                 model VARCHAR(50),
                 color VARCHAR(30),
-                FOREIGN KEY (userID) REFERENCES User(userID)
+                FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
             )
         ");
 
         DB::statement("
             CREATE TABLE Reservation (
-                reservationID INTEGER PRIMARY KEY AUTOINCREMENT,
+                reservationID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 userID INTEGER,
                 vehicleID INTEGER,
                 slotID INTEGER,
@@ -56,56 +56,56 @@ return new class extends Migration
                 totalCost DECIMAL(10,2),
                 paymentStatus VARCHAR(20) DEFAULT 'Pending',
                 reservationStatus VARCHAR(20) DEFAULT 'Active',
-                createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (userID) REFERENCES User(userID),
-                FOREIGN KEY (vehicleID) REFERENCES Vehicle(vehicleID),
-                FOREIGN KEY (slotID) REFERENCES ParkingSlot(slotID)
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE,
+                FOREIGN KEY (vehicleID) REFERENCES Vehicle(vehicleID) ON DELETE CASCADE,
+                FOREIGN KEY (slotID) REFERENCES ParkingSlot(slotID) ON DELETE CASCADE
             )
         ");
 
         DB::statement("
             CREATE TABLE Payment (
-                paymentID INTEGER PRIMARY KEY AUTOINCREMENT,
+                paymentID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 reservationID INTEGER,
                 userID INTEGER,
                 amountPaid DECIMAL(10,2),
                 paymentMethod VARCHAR(30),
                 transactionCode VARCHAR(50) UNIQUE,
-                paymentDate DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID),
-                FOREIGN KEY (userID) REFERENCES User(userID)
+                paymentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID) ON DELETE CASCADE,
+                FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
             )
         ");
 
         DB::statement("
             CREATE TABLE ServiceRating (
-                ratingID INTEGER PRIMARY KEY AUTOINCREMENT,
+                ratingID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 userID INTEGER,
                 slotID INTEGER,
-                ratingValue INTEGER CHECK (ratingValue BETWEEN 1 AND 5),
-                dateRated DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (userID) REFERENCES User(userID),
-                FOREIGN KEY (slotID) REFERENCES ParkingSlot(slotID)
+                ratingValue INTEGER,
+                dateRated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE,
+                FOREIGN KEY (slotID) REFERENCES ParkingSlot(slotID) ON DELETE CASCADE
             )
         ");
 
         DB::statement("
             CREATE TABLE Feedback (
-                feedbackID INTEGER PRIMARY KEY AUTOINCREMENT,
+                feedbackID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 userID INTEGER,
                 message TEXT,
-                dateSubmitted DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (userID) REFERENCES User(userID)
+                dateSubmitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
             )
         ");
 
         DB::statement("
             CREATE TABLE Admin (
-                logID INTEGER PRIMARY KEY AUTOINCREMENT,
+                logID INTEGER PRIMARY KEY AUTO_INCREMENT,
                 adminID INTEGER,
                 action VARCHAR(255),
-                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (adminID) REFERENCES User(userID)
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (adminID) REFERENCES User(userID) ON DELETE CASCADE
             )
         ");
     }
