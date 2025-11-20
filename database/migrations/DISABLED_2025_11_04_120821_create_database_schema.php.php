@@ -12,7 +12,7 @@ return new class extends Migration
   
         DB::statement("
             CREATE TABLE User (
-                userID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                userID INTEGER PRIMARY KEY,
                 fullName VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE ParkingSlot (
-                slotID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                slotID INTEGER PRIMARY KEY,
                 slotNumber VARCHAR(10) UNIQUE NOT NULL,
                 location VARCHAR(100),
                 status VARCHAR(20) DEFAULT 'Available',
@@ -35,7 +35,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE Vehicle (
-                vehicleID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                vehicleID INTEGER PRIMARY KEY,
                 userID INTEGER,
                 NumberPlate VARCHAR(20) UNIQUE NOT NULL,
                 model VARCHAR(50),
@@ -46,7 +46,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE Reservation (
-                reservationID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                reservationID INTEGER PRIMARY KEY,
                 userID INTEGER,
                 vehicleID INTEGER,
                 slotID INTEGER,
@@ -65,7 +65,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE Payment (
-                paymentID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                paymentID INTEGER PRIMARY KEY,
                 reservationID INTEGER,
                 userID INTEGER,
                 amountPaid DECIMAL(10,2),
@@ -79,7 +79,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE ServiceRating (
-                ratingID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                ratingID INTEGER PRIMARY KEY,
                 userID INTEGER,
                 slotID INTEGER,
                 ratingValue INTEGER,
@@ -91,7 +91,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE Feedback (
-                feedbackID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                feedbackID INTEGER PRIMARY KEY,
                 userID INTEGER,
                 message TEXT,
                 dateSubmitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -101,7 +101,7 @@ return new class extends Migration
 
         DB::statement("
             CREATE TABLE Admin (
-                logID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                logID INTEGER PRIMARY KEY,
                 adminID INTEGER,
                 action VARCHAR(255),
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

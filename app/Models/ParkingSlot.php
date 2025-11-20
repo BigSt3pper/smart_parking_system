@@ -8,16 +8,16 @@ class ParkingSlot extends Model
 {
     use HasFactory;
 
-    protected $table = 'ParkingSlot';
-    protected $primaryKey = 'slotID';
+    protected $table = 'parking_slots';
+    protected $primaryKey = 'id';
     public $timestamps = false; 
     protected $fillable = [
-        'slotNumber',
-        'location',
-        'status',
-        'pricePerHour',
-        'description',
-        'lastUpdated'
+    'slotNumber',
+    'location',
+    'status',
+    'pricePerHour',
+    'description',
+    'lastUpdated'
     ];
 
     protected $casts = [
