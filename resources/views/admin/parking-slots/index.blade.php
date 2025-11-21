@@ -7,7 +7,7 @@
     <h2 class="h4 mb-0">
         <i class="bi bi-p-square me-2"></i> Parking Slots Management
     </h2>
-    <a href="{{ route('admin.parking-slots.create') }}" class="btn btn-primary-custom">
+    <a href="{{ route('parking-slots.create') }}" class="btn btn-primary-custom">
         <i class="bi bi-plus-circle me-1"></i> Add New Slot
     </a>
 </div>
@@ -45,7 +45,7 @@
                 <button type="submit" class="btn btn-primary-custom">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
-                <a href="{{ route('admin.parking-slots.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('parking-slots.index') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise me-1"></i> Reset
                 </a>
             </div>
@@ -134,7 +134,7 @@
                                 </div>
                             @else
                                 <div class="mt-2">
-                                    <a href="{{ route('admin.parking-slots.create') }}" class="btn btn-sm btn-primary">
+                                    <a href="{{ route('parking-slots.create') }}" class="btn btn-sm btn-primary">
                                         Add First Slot
                                     </a>
                                 </div>
@@ -178,7 +178,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="bi bi-p-square me-2"></i> Parking Slots Management</h2>
             <div>
-                <a href="{{ route('admin.parking-slots.create') }}" class="btn btn-primary-custom me-2">
+                <a href="{{ route('parking-slots.create') }}" class="btn btn-primary-custom me-2">
                     <i class="bi bi-plus-circle me-1"></i> Add New Slot
                 </a>
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">

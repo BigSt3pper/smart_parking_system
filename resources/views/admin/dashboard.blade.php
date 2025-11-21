@@ -131,12 +131,12 @@
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <a href="{{ route('admin.parking-slots.index') }}" class="btn btn-primary-custom w-100">
+                                <a href="{{ route('parking-slots.index') }}" class="btn btn-primary-custom w-100">
                                     <i class="bi bi-p-square me-2"></i>Manage Parking Slots
                                 </a>
                             </div>
                             <div class="col-md-3">
-                                <a href="{{ route('admin.reservations.index') }}" class="btn btn-success w-100">
+                                <a href="{{ route('reservations.index') }}" class="btn btn-success w-100">
                                     <i class="bi bi-calendar-check me-2"></i>View Reservations
                                 </a>
                             </div>

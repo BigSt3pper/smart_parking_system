@@ -122,13 +122,13 @@
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/parking-slots*') ? 'active' : '' }}" 
-                       href="{{ route('admin.parking-slots.index') }}">
+                       href="{{ route('parking-slots.index') }}">
                         <i class="bi bi-p-square me-2"></i> Parking Slots
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('admin/reservations*') ? 'active' : '' }}" 
-                       href="{{ route('admin.reservations.index') }}">
+                       href="{{ route('reservations.index') }}">
                         <i class="bi bi-calendar-check me-2"></i> Reservations
                     </a>
                 </li>
