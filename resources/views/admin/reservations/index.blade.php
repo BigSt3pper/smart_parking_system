@@ -7,7 +7,7 @@
     <h2 class="h4 mb-0">
         <i class="bi bi-calendar-check me-2"></i> Reservations Management
     </h2>
-    <a href="{{ route('admin.reservations.create') }}" class="btn btn-primary-custom">
+    <a href="{{ route('reservations.create') }}" class="btn btn-primary-custom">
         <i class="bi bi-plus-circle me-1"></i> Create Reservation
     </a>
 </div>
@@ -108,7 +108,7 @@
                 <button type="submit" class="btn btn-primary-custom">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
-                <a href="{{ route('admin.reservations.index') }}" class="btn btn-outline-secondary">
+                <a href="{{ route('reservations.index') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise me-1"></i> Reset
                 </a>
             </div>
@@ -227,7 +227,7 @@
                                 </a>
                             @else
                                 <p class="text-muted mb-3">Get started by creating your first reservation</p>
-                                <a href="{{ route('admin.reservations.create') }}" class="btn btn-primary-custom">
+                                <a href="{{ route('reservations.create') }}" class="btn btn-primary-custom">
                                     <i class="bi bi-plus-circle me-1"></i> Create Reservation
                                 </a>
                             @endif
