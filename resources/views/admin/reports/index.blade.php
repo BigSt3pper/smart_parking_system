@@ -539,4 +539,4 @@
     }
 }
 </style>
-@endsection
+</html>
